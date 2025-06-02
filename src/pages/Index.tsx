@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserProfile } from '@/components/UserProfile';
 import { ChatInterface } from '@/components/ChatInterface';
 import { Header } from '@/components/Header';
@@ -10,12 +10,18 @@ export type UserRole = 'clinician' | 'researcher';
 const Index = () => {
   const [userRole, setUserRole] = useState<UserRole>('clinician');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chatKey, setChatKey] = useState(0);
+
+  const handleRoleChange = (role: UserRole) => {
+    setUserRole(role);
+    setChatKey(prev => prev + 1); // Force chat component to reset
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-amber-50">
       <Header 
         userRole={userRole} 
-        setUserRole={setUserRole}
+        setUserRole={handleRoleChange}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
       />
@@ -33,7 +39,7 @@ const Index = () => {
               <UserProfile userRole={userRole} />
             </div>
             
-            <ChatInterface userRole={userRole} />
+            <ChatInterface key={chatKey} userRole={userRole} />
           </div>
         </main>
       </div>
