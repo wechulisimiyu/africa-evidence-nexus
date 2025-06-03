@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Send, Bot, User, FileText, Search, TrendingUp } from 'lucide-react';
 
 interface Message {
@@ -105,29 +106,85 @@ export const ChatInterface = ({ userRole }: ChatInterfaceProps) => {
 
 **Evidence Level**: High (Multiple RCTs and local cohort studies)`;
     } else {
-      return `## Research Analysis: Fournier's Gangrene in Sub-Saharan Africa
+      return 'RESEARCH_TABLE';
+    }
+  };
 
-**Study Distribution by Design:**
+  const renderMessageContent = (message: Message) => {
+    if (message.role === 'assistant' && message.content === 'RESEARCH_TABLE') {
+      return (
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold">Research Analysis: Fournier's Gangrene in Sub-Saharan Africa</h2>
+          
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Study Distribution by Design:</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-semibold">Study Type</TableHead>
+                  <TableHead className="font-semibold">Count</TableHead>
+                  <TableHead className="font-semibold">Key Findings</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Retrospective</TableCell>
+                  <TableCell>8</TableCell>
+                  <TableCell>Mortality rates 15-30%</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Case Reports</TableCell>
+                  <TableCell>5</TableCell>
+                  <TableCell>Rare presentations documented</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Prospective</TableCell>
+                  <TableCell>2</TableCell>
+                  <TableCell>Long-term QoL assessments</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">RCTs</TableCell>
+                  <TableCell>1</TableCell>
+                  <TableCell>Antibiotic comparisons</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
 
-| Study Type | Count | Key Findings |
-|------------|-------|--------------|
-| Retrospective | 8 | Mortality rates 15-30% |
-| Case Reports | 5 | Rare presentations documented |
-| Prospective | 2 | Long-term QoL assessments |
-| RCTs | 1 | Antibiotic comparisons |
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Identified Research Gaps:</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Limited prospective multicenter studies</li>
+              <li>Standardized treatment protocols needed</li>
+              <li>Cost-effectiveness analyses lacking</li>
+              <li>Quality of life assessments insufficient</li>
+            </ul>
+          </div>
 
-**Identified Research Gaps:**
-- Limited prospective multicenter studies
-- Standardized treatment protocols needed
-- Cost-effectiveness analyses lacking
-- Quality of life assessments insufficient
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Recommendations:</h3>
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>Initiate ECAJS-sponsored multicenter trial</li>
+              <li>Develop resource-adapted guidelines</li>
+              <li>Investigate local antimicrobial resistance patterns</li>
+            </ol>
+          </div>
 
-**Recommendations:**
-1. Initiate ECAJS-sponsored multicenter trial
-2. Develop resource-adapted guidelines
-3. Investigate local antimicrobial resistance patterns
-
-**Future Research Priorities**: Focus on prevention strategies and early detection protocols suitable for primary healthcare settings.`;
+          <div>
+            <p><strong>Future Research Priorities:</strong> Focus on prevention strategies and early detection protocols suitable for primary healthcare settings.</p>
+          </div>
+        </div>
+      );
+    } else if (message.role === 'assistant') {
+      return (
+        <div dangerouslySetInnerHTML={{ 
+          __html: message.content
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        }} />
+      );
+    } else {
+      return <p>{message.content}</p>;
     }
   };
 
@@ -182,11 +239,7 @@ export const ChatInterface = ({ userRole }: ChatInterfaceProps) => {
                     </div>
                     <div className="flex-1">
                       <div className="prose prose-sm max-w-none">
-                        {message.role === 'assistant' ? (
-                          <div dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                        ) : (
-                          <p>{message.content}</p>
-                        )}
+                        {renderMessageContent(message)}
                       </div>
                       {message.metadata && (
                         <div className="mt-3 flex flex-wrap gap-2">
